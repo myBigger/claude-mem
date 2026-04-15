@@ -38,3 +38,34 @@ src/ui/viewer.html
 
 # Local contribution analysis (not part of upstream)
 CONTRIB_NOTES.md
+
+# PrisonSIS project files
+projects/PrisonSIS/build/
+projects/PrisonSIS/test_data/
+*.o
+*.a
+*.so
+bin/
+*.exe
+# PrisonSIS project files
+projects/PrisonSIS/
+projects/build/
+projects/build-docker/
+projects/test_data/
+**/build/
+**/build-*/
+**/*.o
+**/*.a
+**/*.so
+**/bin/
+**/*.exe
+**/.ninja_log
+**/CMakeCache.txt
+**/CMakeFiles/
+**/cmake_install.cmake
+**/build.ninja
+**/PrisonRecordTool_autogen/
+**/PrisonRecordTool.dir/
+**/prison-cli.dir/
+**/*.user
+**/*.autosave

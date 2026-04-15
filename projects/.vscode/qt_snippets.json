@@ -1,0 +1,175 @@
+{
+    "Qt Class": {
+        "prefix": "qclass",
+        "body": [
+            "#ifndef ${1:CLASS_NAME}_H",
+            "#define ${1:CLASS_NAME}_H",
+            "",
+            "#include <QObject>",
+            "#include <QWidget>",
+            "",
+            "class ${1:ClassName} : public QObject",
+            "{",
+            "    Q_OBJECT",
+            "",
+            "public:",
+            "    explicit ${1:ClassName}(QObject *parent = nullptr);",
+            "    ~${1:ClassName}();",
+            "",
+            "signals:",
+            "",
+            "public slots:",
+            "",
+            "private:",
+            "};",
+            "",
+            "#endif // ${1:CLASS_NAME}_H"
+        ],
+        "description": "Qt Class Header Template"
+    },
+    "Qt Widget": {
+        "prefix": "qwidget",
+        "body": [
+            "#ifndef ${1:WIDGET_NAME}_H",
+            "#define ${1:WIDGET_NAME}_H",
+            "",
+            "#include <QWidget>",
+            "#include <QVBoxLayout>",
+            "#include <QHBoxLayout>",
+            "",
+            "class ${1:WidgetName} : public QWidget",
+            "{",
+            "    Q_OBJECT",
+            "",
+            "public:",
+            "    explicit ${1:WidgetName}(QWidget *parent = nullptr);",
+            "    ~${1:WidgetName}();",
+            "",
+            "private:",
+            "    void setupUI();",
+            "    void setupConnections();",
+            "",
+            "private:",
+            "};",
+            "",
+            "#endif // ${1:WIDGET_NAME}_H"
+        ],
+        "description": "Qt Widget Header Template"
+    },
+    "Qt Signal": {
+        "prefix": "qsignal",
+        "body": [
+            "void ${1:signalName}(${2:QString} ${3:param});"
+        ],
+        "description": "Qt Signal Declaration"
+    },
+    "Qt Slot": {
+        "prefix": "qslot",
+        "body": [
+            "private slots:",
+            "    void ${1:slotName}();"
+        ],
+        "description": "Qt Slot Declaration"
+    },
+    "Qt Property": {
+        "prefix": "qproperty",
+        "body": [
+            "Q_PROPERTY(${1:QString} ${2:propertyName} READ ${2:propertyName} WRITE set${2:propertyName} NOTIFY ${2:propertyName}Changed)",
+            "",
+            "${1:QString} m_${2:propertyName};",
+            "",
+            "const ${1:QString}& ${2:propertyName}() const { return m_${2:propertyName}; }",
+            "void set${2:propertyName}(const ${1:QString}& value) {",
+            "    if (m_${2:propertyName} != value) {",
+            "        m_${2:propertyName} = value;",
+            "        emit ${2:propertyName}Changed(value);",
+            "    }",
+            "}",
+            "",
+            "signals:",
+            "    void ${2:propertyName}Changed(const ${1:QString}& value);"
+        ],
+        "description": "Qt Property Declaration"
+    },
+    "Qt Dialog": {
+        "prefix": "qdialog",
+        "body": [
+            "#ifndef ${1:DIALOG_NAME}_H",
+            "#define ${1:DIALOG_NAME}_H",
+            "",
+            "#include <QDialog>",
+            "#include <QVBoxLayout>",
+            "#include <QHBoxLayout>",
+            "#include <QPushButton>",
+            "",
+            "class ${1:DialogName} : public QDialog",
+            "{",
+            "    Q_OBJECT",
+            "",
+            "public:",
+            "    explicit ${1:DialogName}(QWidget *parent = nullptr);",
+            "    ~${1:DialogName}();",
+            "",
+            "private:",
+            "    void setupUI();",
+            "    void setupConnections();",
+            "",
+            "private:",
+            "};",
+            "",
+            "#endif // ${1:DIALOG_NAME}_H"
+        ],
+        "description": "Qt Dialog Header Template"
+    },
+    "Q_OBJECT": {
+        "prefix": "qobject",
+        "body": [
+            "    Q_OBJECT",
+            "",
+            "public:",
+            "",
+            "signals:",
+            "",
+            "public slots:",
+            "",
+            "private:"
+        ],
+        "description": "Q_OBJECT macro"
+    },
+    "connect": {
+        "prefix": "qconnect",
+        "body": [
+            "connect(${1:object}, &${2:QObject}::${3:signal},",
+            "        this, &${3:Widget}::${4:slot});"
+        ],
+        "description": "Qt connect"
+    },
+    "tr()": {
+        "prefix": "qtr",
+        "body": [
+            "tr(\"${1:text}\")"
+        ],
+        "description": "Qt tr() translation"
+    },
+    "QDebug": {
+        "prefix": "qdebug",
+        "body": [
+            "qDebug() << \"${1:message}\" << ${2:var};"
+        ],
+        "description": "qDebug() statement"
+    },
+    "QList": {
+        "prefix": "qlist",
+        "body": [
+            "QList<${1:QString}> ${2:listName};"
+        ],
+        "description": "QList declaration"
+    },
+    "QMap": {
+        "prefix": "qmap",
+        "body": [
+            "QMap<${1:QString}, ${2:QString}> ${3:mapName};"
+        ],
+        "description": "QMap declaration"
+    }
+}

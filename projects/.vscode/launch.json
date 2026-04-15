@@ -1,0 +1,140 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "PrisonRecordTool (Linux Debug)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/bin/PrisonRecordTool",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build",
+            "environment": [
+                {
+                    "name": "QT_DEBUG_PLUGINS",
+                    "value": "1"
+                }
+            ],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "启用打印调试",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "设置源目录",
+                    "text": "-environment-directory ${workspaceFolder}",
+                    "ignoreFailures": false
+                }
+            ],
+            "preLaunchTask": "cmake build",
+            "runDir": "${workspaceFolder}/build",
+            "sourceFileMap": {
+                "${workspaceFolder}": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "PrisonRecordTool (Linux Release)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/bin/PrisonRecordTool",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "启用打印调试",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "cmake build release"
+        },
+        {
+            "name": "PrisonRecordTool (Windows MSVC)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build-windows/bin/PrisonRecordTool.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build-windows",
+            "environment": [
+                {
+                    "name": "QT_DEBUG_PLUGINS",
+                    "value": "1"
+                }
+            ],
+            "visualStudioFileExclusions": [
+                "**/node_modules/**"
+            ]
+        },
+        {
+            "name": "PrisonRecordTool (LLDB Qt6)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/bin/PrisonRecordTool",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build",
+            "environment": [
+                {
+                    "name": "LD_LIBRARY_PATH",
+                    "value": "/usr/lib/x86_64-linux-gnu/qt6/lib:${workspaceFolder}/build"
+                },
+                {
+                    "name": "QT_DEBUG_PLUGINS",
+                    "value": "1"
+                },
+                {
+                    "name": "QT_PLUGIN_PATH",
+                    "value": "/usr/lib/x86_64-linux-gnu/qt6/plugins"
+                }
+            ],
+            "externalConsole": false,
+            "MIMode": "lldb",
+            "setupCommands": [
+                {
+                    "description": "启用打印调试",
+                    "text": "settings set target.inline-breakpoint-strategy always",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "name": "CMake: Build (Debug)",
+            "type": "cmake",
+            "request": "launch",
+            "projectTarget": "PrisonRecordTool",
+            "configureSettings": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            },
+            "preLaunchConfiguration": "configure",
+            "postLaunchConfiguration": "build"
+        },
+        {
+            "name": "CMake: Build (Release)",
+            "type": "cmake",
+            "request": "launch",
+            "projectTarget": "PrisonRecordTool",
+            "configureSettings": {
+                "CMAKE_BUILD_TYPE": "Release"
+            },
+            "preLaunchConfiguration": "configure",
+            "postLaunchConfiguration": "build"
+        }
+    ],
+    "compounds": [
+        {
+            "name": "CMake Debug All",
+            "configurations": [
+                "PrisonRecordTool (Linux Debug)"
+            ],
+            "stopAll": true
+        }
+    ]
+}

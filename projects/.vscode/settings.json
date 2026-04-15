@@ -1,0 +1,122 @@
+{
+    "cmake.configureOnOpen": true,
+    "cmake.buildDirectory": "${workspaceFolder}/build",
+    "cmake.sourceDirectory": "${workspaceFolder}",
+    "cmake.configureArgs": [
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+    ],
+    "cmake.parallel": true,
+    "cmake.ctest.parallel": true,
+    "cmake.buildToolArgs": [
+        "--parallel"
+    ],
+
+    // C++ 配置
+    "C_Cpp.default.cppStandard": "c++17",
+    "C_Cpp.default.cStandard": "c17",
+    "C_Cpp.default.compileCommands": "${workspaceFolder}/build/compile_commands.json",
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "C_Cpp.default.intelliSenseEngine": "default",
+
+    // 格式化配置
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "ms-vscode.cpptools",
+    "[cpp]": {
+        "editor.defaultFormatter": "ms-vscode.cpptools",
+        "editor.formatOnSave": true,
+        "editor.bracketPairColorization.enabled": true
+    },
+    "[c]": {
+        "editor.defaultFormatter": "ms-vscode.cpptools",
+        "editor.formatOnSave": true,
+        "editor.bracketPairColorization.enabled": true
+    },
+
+    // 文件头注释
+    "fileheader.commentTemplate": {
+        "author": "PrisonSIS Team",
+        "license": "MIT",
+        "copyright": "Copyright (c) 2024 PrisonSIS"
+    },
+    "doxdocgen.file.fileTemplate": "@file {name}\n@brief {description}\n@author PrisonSIS Team\n@date {year}",
+    "doxdocgen.generic.order": [
+        "brief",
+        "tparam",
+        "param",
+        "return",
+        "author",
+        "date"
+    ],
+
+    // Qt 特定配置
+    "qttools.enabled.automaticUpdates": true,
+
+    // GitLens 配置
+    "gitlens.currentLine.enabled": false,
+    "gitlens.codeLens.enabled": false,
+    "gitlens.hovers.currentLine.over": "line",
+    "gitlens.blame.statusBar.enabled": false,
+
+    // Todo Tree 配置
+    "todo-tree.tree.showIcons": true,
+    "todo-tree.highlights.defaultHighlight": {
+        "icon": "check",
+        "iconColor": "warning",
+        "type": "text"
+    },
+    "todo-tree.generation.includeComments": true,
+
+    // 缩进彩虹配置
+    "indentRainbow.indicatorStyle": "light",
+    "indentRainbow.exclusionLanguages": ["json", "yaml"],
+
+    // 文件排除
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/*.o": true,
+        "**/*.obj": true,
+        "**/*.a": true,
+        "**/*.lib": true,
+        "**/*.so": true,
+        "**/*.dylib": true,
+        "**/*.dll": true,
+        "**/build/**": true,
+        "**/build-*/**": true
+    },
+    "files.watcherExclude": {
+        "**/.git/objects/**": true,
+        "**/.git/subtree-cache/**": true,
+        "**/node_modules/**": true,
+        "**/build/**": true,
+        "**/build-*/**": true
+    },
+
+    // 安全搜索
+    "search.useGlobalIgnoreFiles": true,
+
+    // 性能配置
+    "editor.inlayHints.enabled": "on",
+    "editor.suggest.showStatusBar": true,
+
+    // C++ 相关
+    "C_Cpp.codeAnalysis.clangTidy.enabled": true,
+    "C_Cpp.codeAnalysis.clangTidy.runAutomatically": true,
+    "C_Cpp.autocomplete.addParentheses": true,
+    "C_Cpp.errorSquiggles": "enabledIfCompileFunctionsSucceed",
+
+    // Qt6 模块
+    "qtconfiguration.kits": [
+        {
+            "name": "Desktop Qt 6.x GCC 64bit",
+            "qtdir": "/usr/lib/x86_64-linux-gnu/qt6",
+            "cmakevars": {
+                "Qt6_DIR": "/usr/lib/x86_64-linux-gnu/cmake/Qt6"
+            }
+        }
+    ]
+}

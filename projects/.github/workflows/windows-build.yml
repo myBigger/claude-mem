@@ -1,0 +1,82 @@
+name: Build Windows x86_64 EXE
+
+"on":
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+env:
+  QT_VERSION: "6.5.3"
+  BUILD_TYPE: Release
+
+jobs:
+  build-windows:
+    name: Build PrisonRecordTool
+    runs-on: windows-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ── 安装 Qt6（jurplel/install-qt-action 会自动设置 QT_DIR 环境变量）────
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: "${{ env.QT_VERSION }}"
+          host: windows
+          target: desktop
+          arch: win64_msvc2019_64
+          dir: "${{ github.workspace }}/Qt"
+          install-deps: "true"
+
+      # ── CMake 配置（从 QT_DIR 环境变量获取 Qt 路径）────────────
+      - name: Configure CMake
+        shell: powershell
+        run: |
+          cmake -B build -G "Visual Studio 17 2022" -A x64 `
+            -DCMAKE_BUILD_TYPE=Release `
+            -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}/install" `
+            -DQt6_DIR="$env:QT_DIR\lib\cmake\Qt6"
+
+      # ── 编译 ──────────────────────────────────────────────────
+      - name: Build
+        shell: powershell
+        run: cmake --build build --config Release --parallel
+        timeout-minutes: 45
+
+      # ── windeployqt 打包 Qt 运行时（含 OpenSSL DLL）───────────
+      - name: windeployqt
+        shell: powershell
+        run: |
+          $OutBin = "${{ github.workspace }}\build\bin"
+          & "$env:QT_DIR\bin\windeployqt.exe" "$OutBin\PrisonRecordTool.exe" `
+            --no-translations `
+            --no-system-d3d-compiler `
+            --no-opengl-sw
+        timeout-minutes: 15
+
+      # ── 验证 EXE ──────────────────────────────────────────────
+      - name: Verify EXE
+        shell: powershell
+        run: |
+          $exe = "${{ github.workspace }}\build\bin\PrisonRecordTool.exe"
+          if (Test-Path $exe) {
+            $size = [math]::Round((Get-Item $exe).Length / 1MB, 2)
+            Write-Host "SUCCESS: PrisonRecordTool.exe ($size MB)"
+            Get-ChildItem "${{ github.workspace }}\build\bin" -File |
+              Measure-Object -Property Length -Sum |
+              ForEach-Object { Write-Host "Total: $([math]::Round($_.Sum/1MB,1)) MB in $($_.Count) files" }
+          } else {
+            Write-Host "FAILURE: EXE not found"
+            exit 1
+          }
+
+      # ── 上传产物 ──────────────────────────────────────────────
+      - name: Upload EXE
+        uses: actions/upload-artifact@v4
+        with:
+          name: PrisonRecordTool-win64-${{ github.run_number }}
+          path: build/bin/
+          retention-days: 30

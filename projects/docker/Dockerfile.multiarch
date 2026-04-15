@@ -1,0 +1,109 @@
+# PrisonSIS Multi-Architecture Docker Build
+# 支持在 ARM64 主机上构建 x86_64 程序
+
+# 阶段1: 构建 x86_64 版本
+FROM --platform=linux/x86_64 debian:bookworm AS builder-x86_64
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV LANG=zh_CN.UTF-8
+
+# 安装编译依赖
+RUN apt-get update && apt-get install -y \
+    cmake \
+    ninja-build \
+    g++ \
+    qt6-base-dev \
+    qt6-base-dev-tools \
+    libqt6sql6-sqlite \
+    libqt6xml6 \
+    libqt6network6 \
+    libqt6printsupport6 \
+    libqt6opengl6-dev \
+    libssl-dev \
+    libgl1-mesa-dev \
+    libxkbcommon-dev \
+    fonts-noto-cjk \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /build
+COPY . /build/PrisonSIS
+
+# 编译 x86_64 版本
+RUN mkdir -p build && cd build && \
+    cmake .. -GNinja && \
+    cmake --build . --parallel && \
+    cp bin/PrisonRecordTool /PrisonRecordTool.x86_64
+
+# 阶段2: 构建 ARM64 版本
+FROM --platform=linux/arm64 debian:bookworm AS builder-arm64
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV LANG=zh_CN.UTF-8
+
+# 安装编译依赖
+RUN apt-get update && apt-get install -y \
+    cmake \
+    ninja-build \
+    g++ \
+    qt6-base-dev \
+    qt6-base-dev-tools \
+    libqt6sql6-sqlite \
+    libqt6xml6 \
+    libqt6network6 \
+    libqt6printsupport6 \
+    libqt6opengl6-dev \
+    libssl-dev \
+    libgl1-mesa-dev \
+    libxkbcommon-dev \
+    fonts-noto-cjk \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /build
+COPY . /build/PrisonSIS
+
+# 编译 ARM64 版本
+RUN mkdir -p build && cd build && \
+    cmake .. -GNinja && \
+    cmake --build . --parallel && \
+    cp bin/PrisonRecordTool /PrisonRecordTool.arm64
+
+# 最终镜像：打包两个架构的二进制文件
+FROM debian:bookworm-slim
+
+# 安装运行时依赖
+RUN apt-get update && apt-get install -y \
+    libqt6sql6-sqlite \
+    libqt6xml6 \
+    libqt6network6 \
+    libqt6widgets6 \
+    libqt6gui6 \
+    libqt6core6 \
+    libssl3 \
+    libgl1 \
+    libxkbcommon0 \
+    libfontconfig1 \
+    libfreetype6 \
+    fonts-noto-cjk \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# 复制编译产物
+COPY --from=builder-x86_64 /PrisonRecordTool.x86_64 /opt/PrisonSIS/
+COPY --from=builder-arm64 /PrisonRecordTool.arm64 /opt/PrisonSIS/
+
+# 设置入口点
+WORKDIR /opt/PrisonSIS
+RUN chmod +x PrisonRecordTool.x86_64 PrisonRecordTool.arm64
+
+# 创建启动脚本
+RUN echo '#!/bin/bash\n' \
+    'ARCH=$(uname -m)\n' \
+    'if [ "$ARCH" = "x86_64" ]; then\n' \
+    '  exec ./PrisonRecordTool.x86_64 "$@"\n' \
+    'else\n' \
+    '  exec ./PrisonRecordTool.arm64 "$@"\n' \
+    'fi' > /opt/PrisonSIS/run.sh && chmod +x /opt/PrisonSIS/run.sh
+
+ENTRYPOINT ["/opt/PrisonSIS/run.sh"]

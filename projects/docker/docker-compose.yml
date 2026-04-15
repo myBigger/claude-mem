@@ -1,0 +1,70 @@
+# PrisonSIS Docker Compose 配置文件
+# 用于跨平台交叉编译
+
+services:
+  # x86_64 构建环境
+  build-x86_64:
+    build:
+      context: .
+      dockerfile: Dockerfile.x86_64
+    container_name: prisonsis-builder-x86_64
+    volumes:
+      - ../..:/workspace/PrisonSIS
+    working_dir: /workspace/PrisonSIS
+    command: |
+      sh -c "
+        mkdir -p build-docker && cd build-docker &&
+        cmake .. -DCMAKE_BUILD_TYPE=Release &&
+        cmake --build . --parallel &&
+        echo '构建完成: build-docker/bin/PrisonRecordTool'
+      "
+    profiles:
+      - build
+
+  # ARM64 构建环境
+  build-arm64:
+    build:
+      context: .
+      dockerfile: Dockerfile.arm64-cross
+    container_name: prisonsis-builder-arm64
+    volumes:
+      - ../..:/workspace/PrisonSIS
+    working_dir: /workspace/PrisonSIS
+    command: |
+      sh -c "
+        mkdir -p build-docker && cd build-docker &&
+        cmake .. -DCMAKE_BUILD_TYPE=Release &&
+        cmake --build . --parallel &&
+        echo '构建完成: build-docker/bin/PrisonRecordTool'
+      "
+    profiles:
+      - build
+
+  # 交互式 Shell
+  shell-x86_64:
+    build:
+      context: .
+      dockerfile: Dockerfile.x86_64
+    container_name: prisonsis-shell-x86_64
+    volumes:
+      - ../..:/workspace/PrisonSIS
+    working_dir: /workspace/PrisonSIS
+    stdin_open: true
+    tty: true
+    profiles:
+      - shell
+
+  shell-arm64:
+    build:
+      context: .
+      dockerfile: Dockerfile.arm64-cross
+    container_name: prisonsis-shell-arm64
+    volumes:
+      - ../..:/workspace/PrisonSIS
+    working_dir: /workspace/PrisonSIS
+    stdin_open: true
+    tty: true
+    profiles:
+      - shell
+
+version: '3.8'

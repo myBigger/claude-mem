@@ -1,0 +1,46 @@
+{
+    "version": 4,
+    "kits": [
+        {
+            "name": "GCC 11 (Linux x86_64)",
+            "compilers": {
+                "C": "/usr/bin/gcc",
+                "CXX": "/usr/bin/g++"
+            },
+            "environment": {
+                "Qt6_DIR": "/usr/lib/x86_64-linux-gnu/cmake/Qt6"
+            },
+            "toolchainFile": "",
+            "preferredGenerator": {
+                "name": "Unix Makefiles",
+                "platform": ""
+            }
+        },
+        {
+            "name": "Clang 14 (Linux x86_64)",
+            "compilers": {
+                "C": "/usr/bin/clang",
+                "CXX": "/usr/bin/clang++"
+            },
+            "environment": {
+                "Qt6_DIR": "/usr/lib/x86_64-linux-gnu/cmake/Qt6"
+            },
+            "preferredGenerator": {
+                "name": "Unix Makefiles"
+            }
+        },
+        {
+            "name": "Visual Studio 17 2022 (Windows x64)",
+            "visualStudio": "17.0",
+            "visualStudioArchitecture": "x64",
+            "environment": {
+                "Qt6_DIR": "C:/Qt/6.7.0/msvc2022_64/lib/cmake/Qt6",
+                "OPENSSL_ROOT": "C:/Program Files/OpenSSL-Win64"
+            },
+            "preferredGenerator": {
+                "name": "Visual Studio 17 2022",
+                "platform": "x64"
+            }
+        }
+    ]
+}

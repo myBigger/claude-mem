@@ -1,0 +1,87 @@
+# PrisonSIS Cross-Compilation: Build x86_64 on ARM64
+# 用于在 ARM64 (aarch64) 主机上交叉编译 x86_64 程序
+# 需要 Docker BuildKit 和 QEMU 支持
+
+# 设置多架构构建
+# 使用 docker buildx --platform linux/x86_64 构建
+
+FROM --platform=linux/x86_64 debian:bookworm AS builder
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV LANG=zh_CN.UTF-8
+ENV CC=gcc
+ENV CXX=g++
+
+# 安装 x86_64 交叉编译工具
+RUN dpkg --add-architecture amd64 && \
+    apt-get update && apt-get install -y \
+    # 交叉编译工具链
+    binutils-x86-64-linux-gnu \
+    gcc-x86-64-linux-gnu \
+    g++-x86-64-linux-gnu \
+    libc6-dev-amd64-cross \
+    # 构建工具
+    cmake \
+    ninja-build \
+    pkg-config \
+    # Qt6 x86_64
+    qt6-base-dev:amd64 \
+    qt6-base-dev-tools:amd64 \
+    libqt6sql6-sqlite:amd64 \
+    libqt6xml6:amd64 \
+    libqt6network6:amd64 \
+    libqt6printsupport6:amd64 \
+    libqt6opengl6-dev:amd64 \
+    # OpenSSL x86_64
+    libssl-dev:amd64 \
+    # 图形库 x86_64
+    libgl1-mesa-dev:amd64 \
+    libglu1-mesa-dev:amd64 \
+    libxkbcommon-dev:amd64 \
+    libxcb1-dev:amd64 \
+    # 字体
+    fonts-noto-cjk \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# 设置交叉编译工具链
+ENV CROSS_TRIPLE=x86_64-linux-gnu
+ENV CC=/usr/bin/${CROSS_TRIPLE}-gcc
+ENV CXX=/usr/bin/${CROSS_TRIPLE}-g++
+ENV AR=/usr/bin/${CROSS_TRIPLE}-ar
+ENV RANLIB=/usr/bin/${CROSS_TRIPLE}-ranlib
+
+WORKDIR /build
+COPY . /build/PrisonSIS
+
+# 配置并编译
+RUN mkdir -p build && cd build && \
+    cmake .. \
+        -GNinja \
+        -DCMAKE_C_COMPILER=/usr/bin/${CROSS_TRIPLE}-gcc \
+        -DCMAKE_CXX_COMPILER=/usr/bin/${CROSS_TRIPLE}-g++ \
+        -DCMAKE_FIND_ROOT_PATH=/usr/${CROSS_TRIPLE} && \
+    cmake --build . --parallel
+
+# 提取编译产物
+FROM debian:bookworm-slim
+COPY --from=builder /build/PrisonSIS/build/bin/PrisonRecordTool /opt/PrisonSIS/
+COPY --from=builder /build/PrisonSIS/build/bin/PrisonRecordTool /usr/local/bin/
+
+# 安装运行时依赖
+RUN apt-get update && apt-get install -y \
+    libqt6sql6-sqlite \
+    libqt6xml6 \
+    libqt6network6 \
+    libqt6widgets6 \
+    libqt6gui6 \
+    libqt6core6 \
+    libssl3 \
+    libgl1 \
+    fonts-noto-cjk \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN chmod +x /opt/PrisonSIS/PrisonRecordTool /usr/local/bin/PrisonRecordTool
+
+ENTRYPOINT ["/usr/local/bin/PrisonRecordTool"]

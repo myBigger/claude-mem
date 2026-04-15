@@ -1,0 +1,64 @@
+# PrisonSIS Cross-Compilation Docker Image
+# 用于在 x86_64 机器上编译 ARM64 程序
+
+FROM debian:bookworm
+
+# 设置环境变量
+ENV DEBIAN_FRONTEND=noninteractive
+ENV LANG=zh_CN.UTF-8
+ENV LC_ALL=zh_CN.UTF-8
+
+# 安装基础工具和编译依赖
+RUN apt-get update && apt-get install -y \
+    # 编译工具链
+    cmake \
+    ninja-build \
+    g++ \
+    g++-12 \
+    make \
+    pkg-config \
+    # Qt6 开发包
+    qt6-base-dev \
+    qt6-base-dev-tools \
+    libqt6sql6-sqlite \
+    libqt6xml6 \
+    libqt6network6 \
+    libqt6printsupport6 \
+    libqt6opengl6-dev \
+    # OpenSSL
+    libssl-dev \
+    # 图形库
+    libgl1-mesa-dev \
+    libglu1-mesa-dev \
+    libxkbcommon-dev \
+    libxcb-xkb-dev \
+    libxcb-icccm4-dev \
+    libxcb-image0-dev \
+    libxcb-keysyms1-dev \
+    libxcb-randr0-dev \
+    libxcb-render-util0-dev \
+    libxcb-shape0-dev \
+    libxcb-xfixes0-dev \
+    libxcb-xinerama0-dev \
+    libxcb-cursor-dev \
+    # 字体和本地化
+    fonts-noto-cjk \
+    fonts-wqy-microhei \
+    # 其他
+    git \
+    curl \
+    wget \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# 设置工作目录
+WORKDIR /workspace
+
+# 复制项目文件
+COPY . /workspace/PrisonSIS
+
+# 创建构建目录
+RUN mkdir -p /workspace/PrisonSIS/build-docker
+
+# 默认构建命令
+CMD ["/bin/bash"]

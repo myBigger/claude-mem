@@ -1,0 +1,56 @@
+# PrisonSIS Cross-Compilation: ARM64 -> x86_64
+# 在 ARM64 主机上交叉编译 x86_64 程序
+# moc/uic/rcc 使用 ARM64 原生版本，编译使用 x86_64 交叉编译器
+
+FROM debian:bookworm
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV LANG=zh_CN.UTF-8
+
+# 安装 QEMU 用户态 + x86_64 交叉编译工具链
+RUN dpkg --add-architecture amd64 && \
+    apt-get update && apt-get install -y \
+    # QEMU（让容器能运行 x86_64 二进制，g++ 等工具通过 QEMU 执行）
+    qemu-user-static \
+    # x86_64 交叉编译工具链
+    binutils-x86-64-linux-gnu \
+    gcc-x86-64-linux-gnu \
+    g++-x86-64-linux-gnu \
+    libc6-dev-amd64-cross \
+    # CMake / Ninja
+    cmake \
+    ninja-build \
+    # Qt6 x86_64 库
+    qt6-base-dev:amd64 \
+    qt6-base-dev-tools:amd64 \
+    libqt6sql6-sqlite:amd64 \
+    libqt6xml6:amd64 \
+    libqt6network6:amd64 \
+    libqt6printsupport6:amd64 \
+    libqt6opengl6-dev:amd64 \
+    # OpenSSL x86_64
+    libssl-dev:amd64 \
+    # 图形库 x86_64
+    libgl1-mesa-dev:amd64 \
+    libglu1-mesa-dev:amd64 \
+    libxkbcommon-dev:amd64 \
+    libxcb1-dev:amd64 \
+    # 字体
+    fonts-noto-cjk \
+    fonts-wqy-microhei \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /workspace
+COPY . /workspace/PrisonSIS/docker
+
+# 复制 ARM64 Qt6 工具（从构建上下文）覆盖 x86_64 版本
+# moc/uic/rcc 只需解析头文件生成 C++ 代码，无需与目标架构一致
+COPY moc-arm64 uic-arm64 rcc-arm64 /usr/lib/qt6/libexec/
+RUN chmod +x /usr/lib/qt6/libexec/moc \
+             /usr/lib/qt6/libexec/uic \
+             /usr/lib/qt6/libexec/rcc
+
+RUN mkdir -p /workspace/PrisonSIS/build-docker
+
+CMD ["/bin/bash"]

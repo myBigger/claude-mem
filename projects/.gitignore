@@ -1,0 +1,14 @@
+# Ignore build artifacts
+build/
+*.o
+*.a
+*.so
+bin/
+*.exe
+# Qt specific
+moc_*.cpp
+qrc_*.cpp
+ui_*.h
+# OS
+.DS_Store
+Thumbs.db
